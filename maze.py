@@ -32,7 +32,7 @@ class Maze:
     def coord_to_floored_block_position(self, pos):
         block_pos_x = pos[0] // SPRITE_SIZE
         block_pos_y = pos[1] // SPRITE_SIZE
-        return (block_pos_x, block_pos_y)
+        return (int(block_pos_x), int(block_pos_y))
 
     def check_collision(self, pos):
         block_pos = self.coord_to_floored_block_position(pos)
@@ -113,7 +113,8 @@ class Maze:
             generated_level[TOTAL_SPRITES_V - 3][j] = '#'
 
         self.recursive_generation((7, 3), generated_level, ((3, TOTAL_SPRITES_H - 3), (3, TOTAL_SPRITES_V - 3)))
-        self.fix_generated_level(generated_level, ((3, TOTAL_SPRITES_H - 3), (3, TOTAL_SPRITES_V - 3)))
+        # Broken
+        #self.fix_generated_level(generated_level, ((3, TOTAL_SPRITES_H - 3), (3, TOTAL_SPRITES_V - 3)))
 
         available_pos = []
         for i in range(len(generated_level)):

@@ -14,7 +14,7 @@ pygame.display.set_icon(icon)
 maze = Maze(levels[0])
 maze.generate_new_level(random_level_name)
 algorithms = Algoritms()
-func_helper = [('DFS', algorithms.get_dfs_function()), ('BFS', algorithms.get_bfs_function()), ('UCS', algorithms.get_ucs_function())]
+func_helper = [('BFS', algorithms.get_bfs_function()), ('UCS', algorithms.get_ucs_function())]
 func_index = 0
 
 running = True
@@ -91,6 +91,8 @@ while running:
 
         screen.fill((0, 0, 0))
 
+        min_steps = 999999
+        pacman_ppos = pacman.get_pos()
         are_all_coins_collected = True
         for coin in coins:
             if (coin.get_visibility_state()):
@@ -98,6 +100,10 @@ while running:
                     score += coin.get_value()
                     coin.change_visibility_state()
                 else:
+                    steps, path = algorithms.find_path(algorithms.get_astar_function(), maze.get_level(), maze.coord_to_floored_block_position(pacman_ppos), maze.coord_to_floored_block_position(coin.get_pos()))
+                    if steps < min_steps:
+                        min_steps = steps
+                        min_path = path
                     are_all_coins_collected = False
                     screen.blit(coin.get_sprite(), coin.get_pos())
 
@@ -105,6 +111,10 @@ while running:
             level_idx += 1
             if (len(levels) > level_idx):
                 maze.set_level(levels[level_idx])
+
+        next_cell = find_next_cell(min_path)
+        target_ppos = (next_cell[0] * SPRITE_SIZE, next_cell[1] * SPRITE_SIZE)
+        pacman.set_velocity(get_direction(target_ppos[0], pacman_ppos[0]) * 3, get_direction(target_ppos[1], pacman_ppos[1]) * 3)
 
         for booster in boosters:
             if (booster.get_visibility_state()):
@@ -131,12 +141,16 @@ while running:
         for ghost in ghosts:
             if ghost.get_visibility_state():
                 start_time = time.time()
-                step, path = algorithms.find_path(func_helper[func_index][1], maze.get_level(), maze.coord_to_floored_block_position(ghost.get_pos()), maze.coord_to_floored_block_position(pacman.get_pos()))
+                ghost_ppos = ghost.get_pos()
+                steps, path = algorithms.find_path(func_helper[func_index][1], maze.get_level(), maze.coord_to_floored_block_position(ghost_ppos), maze.coord_to_floored_block_position(pacman_ppos))
                 time_total += time.time() - start_time
                 next_cell = find_next_cell(path)
-                ghost_ppos = ghost.get_pos()
-                # Make it possible for ghost to catch up for player
-                ghost.set_velocity(get_direction(next_cell[0] * SPRITE_SIZE, ghost_ppos[0]) * 3, get_direction(next_cell[1] * SPRITE_SIZE, ghost_ppos[1]) * 3)
+                target_ppos = (next_cell[0] * SPRITE_SIZE, next_cell[1] * SPRITE_SIZE)
+                if next_cell == maze.coord_to_floored_block_position(pacman_ppos):
+                    target_ppos = (pacman_ppos[0], pacman_ppos[1])
+                
+                # Make it possible for ghost to catch up for player - Done
+                ghost.set_velocity(get_direction(target_ppos[0], ghost_ppos[0]) * 3, get_direction(target_ppos[1], ghost_ppos[1]) * 3)
 
                 for i in range(len(path)):
                     for j in range(len(path[i])):

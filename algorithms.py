@@ -125,7 +125,6 @@ class Algoritms:
                             cell_g = cell[1] + 1
                             cell_h = abs(adjx - target[0]) + abs(adjy - target[1])
                             queue.append((cell_g + cell_h, cell_g, cell_h, adjx, adjy))
-    
         return path_matrix[target[1]][target[0]], self.retrieve_shortest_path(maze, pos, target, path_matrix)
 
     def find_path(self, search_function, maze, starting_pos, ending_pos):

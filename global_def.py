@@ -19,7 +19,7 @@ EATEN_ENEMY_REWARD = 200
 COIN_VALUE = 10
 MIN_COLLISION_DISTANCE = 25
 FPS = 60
-TRAVERSAL_FUNCTIONS_AMOUNT = 3
+TRAVERSAL_FUNCTIONS_AMOUNT = 2
 
 random_level_name = 'random_level'
 levels = [random_level_name, 'level1', 'level2', 'level3']
